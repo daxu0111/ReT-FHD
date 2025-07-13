@@ -58,7 +58,7 @@ class Hdl(Server):
                 self.uploaded_ids.append(client.id)
                 self.uploaded_logits.append(client.logits)
 
-        # self.uploaded_logits = self.validate()
+
 
 
     def evaluate(self, round, cls_tab, acc=None, loss=None):
@@ -126,124 +126,6 @@ class Hdl(Server):
         return ids, num_samples, tot_correct, tot_auc, tot_class_num, tot_class_correct
 
 
-    def validate(self):
-
-        psi = 0.5
-        phi = 0.5
-        eta = 0.5
-        tau = 1.0
-
-        # 获取数据
-        z_E = self.uploaded_logits
-        z_global = self.global_logits
-
-
-        if len(z_global.shape) == 2 and z_global.shape[1] == 2:
-            z_g = z_global[:, 0]
-            z_V = z_global[:, 1]
-        else:
-
-            mid = len(z_global) // 2
-            z_g = z_global[:mid]
-            z_V = z_global[mid:]
-
-        H = min(len(z_E), len(z_g), len(z_V))
-
-        def Z_function(z, tau):
-
-            return z / tau
-
-        def compute_delta_Z(z_a, z_b, tau):
-
-            return Z_function(z_a, tau) - Z_function(z_b, tau)
-
-
-        valid_indices = []
-        validation_details = []
-
-
-        for i in range(H):
-
-            delta_Z_E_V = compute_delta_Z(z_E[i], z_V[i], tau)
-            delta_Z_E_g = compute_delta_Z(z_E[i], z_g[i], tau)
-            delta_Z_V_g = compute_delta_Z(z_V[i], z_g[i], tau)
-
-
-            term1 = np.exp((delta_Z_E_V) ** psi)
-            term2 = np.exp((delta_Z_E_g) ** phi)
-            numerator_i = term1 + term2
-
-
-            denominator_i = np.exp((delta_Z_V_g) ** eta)
-
-
-            numerator_total = 0
-            denominator_total = 0
-            for j in range(H):
-                delta_Z_E_V_j = compute_delta_Z(z_E[j], z_V[j], tau)
-                delta_Z_E_g_j = compute_delta_Z(z_E[j], z_g[j], tau)
-                delta_Z_V_g_j = compute_delta_Z(z_V[j], z_g[j], tau)
-
-                numerator_total += (np.exp((delta_Z_E_V_j) ** psi) +
-                                    np.exp((delta_Z_E_g_j) ** phi))
-                denominator_total += np.exp((delta_Z_V_g_j) ** eta)
-
-            left_side = numerator_total / denominator_total if denominator_total != 0 else float('inf')
-
-
-            Z_E = Z_function(z_E[i], tau)
-            Z_g = Z_function(z_g[i], tau)
-            Z_V = Z_function(z_V[i], tau)
-
-            exponent = (Z_E ** psi) - (Z_g ** psi + Z_V ** psi) / 2
-            right_side_i = 2 * np.exp(exponent)
-
-
-            right_side_total = 0
-            for j in range(H):
-                Z_E_j = Z_function(z_E[j], tau)
-                Z_g_j = Z_function(z_g[j], tau)
-                Z_V_j = Z_function(z_V[j], tau)
-
-                exponent_j = (Z_E_j ** psi) - (Z_g_j ** psi + Z_V_j ** psi) / 2
-                right_side_total += np.exp(exponent_j)
-            right_side_total *= 2
-
-
-            is_valid = left_side > right_side_total
-
-
-
-            if is_valid:
-                valid_indices.append(i)
-
-            validation_details.append({
-                'index': i,
-                'is_valid': is_valid,
-                'left_side': left_side,
-                'right_side': right_side_total,
-                'sample_contribution': {
-                    'numerator': numerator_i,
-                    'denominator': denominator_i,
-                    'right_side': right_side_i
-                }
-            })
-
-
-        if valid_indices:
-            self.uploaded_logits = self.uploaded_logits[valid_indices]
-
-
-            if len(z_global.shape) == 2 and z_global.shape[1] == 2:
-                self.global_logits = self.global_logits[valid_indices]
-            else:
-
-                valid_z_g = z_g[valid_indices]
-                valid_z_V = z_V[valid_indices]
-                self.global_logits = np.concatenate([valid_z_g, valid_z_V])
-
-
-        return self.uploaded_logits
 
     def save_models(self):
         models = []
