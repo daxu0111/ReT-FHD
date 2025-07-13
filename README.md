@@ -1,3 +1,4 @@
+# Rethinking the Temperature for Federated Heterogeneous Distillation
 <font style="color:rgb(31, 35, 40);">An official implementation for "</font>[Rethinking the Temperature for Federated Heterogeneous Distillation](https://openreview.net/pdf?id=f9xsNQ8oSd)", ICML2025.
 
 # <font style="color:rgb(31, 35, 40);">Installation</font>
