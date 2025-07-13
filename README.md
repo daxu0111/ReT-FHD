@@ -14,7 +14,7 @@ pip install -r requirements.txt
 <font style="color:rgb(31, 35, 40);">Please run the script</font><font style="color:rgb(31, 35, 40);">:</font>
 
 ```bash
-python dataset/cifar.py noniid x dir
+python dataset/generate_Cifar10.py noniid x dir
 ```
 
 # <font style="color:rgb(31, 35, 40);">Training</font>
