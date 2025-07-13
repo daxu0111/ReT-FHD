@@ -2,6 +2,7 @@
 <font style="color:rgb(31, 35, 40);">An official implementation for "</font>[Rethinking the Temperature for Federated Heterogeneous Distillation](https://openreview.net/pdf?id=f9xsNQ8oSd)", ICML2025.
 
 # <font style="color:rgb(31, 35, 40);">Installation</font>
+<font style="color:rgb(31, 35, 40);">To set up the environment, follow these steps:</font>
 ```bash
 conda create -n ReT-FHD
 conda activate ReT-FHD
@@ -18,6 +19,7 @@ python dataset/generate_Cifar10.py noniid x dir
 ```
 
 # <font style="color:rgb(31, 35, 40);">Training</font>
+<font style="color:rgb(31, 35, 40);">Before training, please make sure that the dataset is downloaded and preprocessed already.</font>
 ```bash
 cd ReT-FHD
 python run.py --dataset /ptah/to/CIFAR_10 --num_classes 10 --max_rounds 400
