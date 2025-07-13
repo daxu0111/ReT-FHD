@@ -11,7 +11,7 @@ pip install -r requirements.txt
 # Data Preparation
 <font style="color:rgb(31, 35, 40);">After installation, prepare the dataset according to the following instructions.</font>
 
-<font style="color:rgb(31, 35, 40);">Please run the script in </font>`<font style="color:rgb(31, 35, 40);background-color:rgba(129, 139, 152, 0.12);">dataset/</font>`<font style="color:rgb(31, 35, 40);">:</font>
+<font style="color:rgb(31, 35, 40);">Please run the script in </font><font style="color:rgb(31, 35, 40);">:</font>
 
 ```bash
 python dataset/cifar.py noniid x dir
